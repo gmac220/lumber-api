@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: lumber
+      POSTGRES_PASSWORD: lumber
+      POSTGRES_DB: lumber
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  api:
+    build: .
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://lumber:lumber@db:5432/lumber?sslmode=disable
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
